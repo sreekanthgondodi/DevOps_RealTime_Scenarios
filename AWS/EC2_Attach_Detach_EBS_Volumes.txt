@@ -1,0 +1,47 @@
+Mount the EBS volume to EC2 instance
+****************************************************************************************************************
+1. lsblk command to view available disk devices
+lsblk
+
+2. New volumes are raw block devices, and you must create a file system on them before you can mount and use them
+file -s /dev/xvdn (your preferred name)
+
+3. Use below command to create an ext4 file system on the volume
+mkfs -t ext4 /dev/xvdn
+
+4. Use below command to create a mount point directory for the volume
+mkdir /data1 (your preferred name)
+
+5. Use below command to mount
+mount /dev/xvdn /data1
+
+6. To mount this EBS volume on every system reboot, add an entry for the device to the /etc/fstab file
+Create a backup of your /etc/fstab file that you accidently destroy or delete this file while you are editing it.
+
+cp /etc/fstab /etc/fstab.backup
+
+/dev/xvdn /dev1 ext4 defaults,nofail 0 0
+
+--------------------------------------------------------------------------------------------------------------------------
+Unmount the EBS volume from EC2 instance
+*******************************************************************************************************
+1. Use below command to unmount /dev/xvdn device
+umount -d /data1
+
+If you see message like target is busy, then do following
+
+2. kill all the process related to that volume
+2.1 get the list of process ids
+lsof /data1
+2.2 Kill all the processes 
+kill -9 <PID>
+
+3. After killing all the processes, execute umount command which is mentioned in step-1
+umount -d /data1
+
+4. Verify file system now
+df -h
+
+5. In AWS console, detach the EBS volume 
+
+--------------------------------------------------------------------------------------------------------------------------
